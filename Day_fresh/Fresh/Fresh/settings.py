@@ -60,12 +60,13 @@ ROOT_URLCONF = 'Fresh.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'template')],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
+                'django.template.context_processors.static',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
@@ -132,7 +133,20 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static')
+]
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+
+# 邮箱发送邮件配置
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_USE_TLS = False   # 是否使用TLS安全传输协议(用于在两个通信应用程序之间提供保密性和数据完整性。)
+# EMAIL_USE_SSL = True    # 是否使用SSL加密，qq企业邮箱要求使用
+EMAIL_HOST = 'smtp.163.com'   # 发送邮件的邮箱 的 SMTP服务器，这里用了163邮箱
+EMAIL_PORT = 25     # 发件箱的SMTP服务器端口
+EMAIL_HOST_USER = '15666809216@163.com'    # 发送邮件的邮箱地址
+EMAIL_HOST_PASSWORD = 'beauty234'         # 发送邮件的邮箱密码(这里使用的是授权码)
+EMAIL_FROM = '天天生鲜<15666809216@163.com>'  # 收件人看到的发件人

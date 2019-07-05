@@ -13,6 +13,7 @@ mysql = "*"
 pymysql = "*"
 9-3 = "*"
 itsdangerous = "*"
+celery = "*"
 
 [requires]
 python_version = "3.6"
