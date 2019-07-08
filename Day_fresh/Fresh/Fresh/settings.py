@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_celery_results',
     'rest_framework',
     'user.apps.UserConfig',
     'order.apps.OrderConfig',
@@ -140,6 +141,11 @@ STATICFILES_DIRS = [
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
+# CELERY 配置
+CELERY_BROKER_URL = 'redis://127.0.0.1:6379/10'
+CELERY_RESULT_BACKEND = 'django-db'
+CELERY_TASK_SERIALIZER = 'json'
+
 
 # 邮箱发送邮件配置
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
@@ -150,3 +156,22 @@ EMAIL_PORT = 25     # 发件箱的SMTP服务器端口
 EMAIL_HOST_USER = '15666809216@163.com'    # 发送邮件的邮箱地址
 EMAIL_HOST_PASSWORD = 'beauty234'         # 发送邮件的邮箱密码(这里使用的是授权码)
 EMAIL_FROM = '天天生鲜<15666809216@163.com>'  # 收件人看到的发件人
+
+
+# 作为 cache backend 使用配置 使用redis保存session
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/9",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    }
+}
+
+# Django 默认可以使用任何 cache backend 作为 session backend, 将 django-redis 作为 session 储存后端不用安装任何额外的 backend
+SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+SESSION_CACHE_ALIAS = "default"
+
+# 配置我们的登录URL 地址
+LOGIN_URL = '/user/login/'

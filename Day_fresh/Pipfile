@@ -14,6 +14,9 @@ pymysql = "*"
 9-3 = "*"
 itsdangerous = "*"
 celery = "*"
+django-celery-results = "*"
+django-redis-sessions = "*"
+django-redis = "*"
 
 [requires]
 python_version = "3.6"

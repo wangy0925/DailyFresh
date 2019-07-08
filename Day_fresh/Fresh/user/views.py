@@ -5,8 +5,10 @@ from itsdangerous import TimedJSONWebSignatureSerializer as dangerous_serializer
 from itsdangerous import SignatureExpired
 from django.http import HttpResponse
 from django.conf import settings
-from celery_task.task import send_register_active_email
-import time
+from django.contrib.auth import authenticate, login as loginIn
+from django.contrib.auth.decorators import login_required
+from .task import send_register_active_email
+
 
 
 # Create your views here.
@@ -84,4 +86,72 @@ def login(request):
     :param request:
     :return: 登录
     """
-    return render(request, 'user/login.html')
+    if request.method == 'GET':
+        # 判断是否记住用户名
+        print(request.COOKIES)
+        if 'username' in request.COOKIES:
+            username = request.COOKIES.get('username')
+            checked = 'checked'
+        else:
+            username = ''
+            checked = ''
+        return render(request, 'user/login.html', {'username': username, 'checked': checked})
+    else:
+        # 接收数据
+        username = request.POST.get('username')
+        pwd = request.POST.get('pwd')
+        if not all([username, pwd]):
+            return render(request, 'user/login.html', {'error_msg': '数据不完整'})
+        else:
+            # 数据处理,登录校验
+            user = authenticate(username=username, password=pwd)
+            if user is None:
+                return render(request, 'user/login.html', {'error_msg': '该用户未注册'})
+            else:
+                if user.is_active:
+                    loginIn(request, user)
+                    # 获取登录后要跳转的地址
+                    next_url = request.GET.get('next', '/goods/index/')
+                    # 跳转到首页
+                    response = redirect(next_url)
+                    remember = request.POST.get('remember')
+                    # 记住用户名
+                    if remember == 'on':
+                        response.set_cookie('username', username, max_age=7*24*3600)
+                    else:
+                        response.delete_cookie('username')
+                    return response
+                else:
+                    return render(request, 'user/login.html', {'error_msg': '该用户未激活'})
+
+
+@login_required
+def user_info(request):
+    """
+    :param request:
+    :return: 个人中心
+    """
+    return render(request, 'user_info/userinfo.html', {'page': 'user'})
+
+
+@login_required
+def user_orders(request):
+    """
+    :param request:
+    :return: 全部订单
+    request.user.is_authenticated() 判断是否登录
+    """
+    print('全部订单')
+    return render(request, 'user_info/all_orders.html', {'page': 'order'})
+
+
+@login_required
+def user_address(request):
+    """
+    :param request:
+    :return: 收货地址
+    """
+    print('收货地址')
+    return render(request, 'user_info/receive_addres.html', {'page': 'address'})
+    
+ 

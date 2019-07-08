@@ -1,0 +1,32 @@
+  {#  详情页, 列表页  #}
+{% extends 'base.html' %}
+{% load static %}
+{% block body %}
+<div class="navbar_con">
+		<div class="navbar clearfix">
+			<div class="subnav_con fl">
+				<h1>全部商品分类</h1>
+				<span></span>
+				<ul class="subnav">
+					<li><a href="/goods/list/1/" class="fruit">新鲜水果</a></li>
+					<li><a href="/goods/list/2/" class="seafood">海鲜水产</a></li>
+					<li><a href="/goods/list/3/" class="meet">猪牛羊肉</a></li>
+					<li><a href="/goods/list/4/" class="egg">禽类蛋品</a></li>
+					<li><a href="/goods/list/5/" class="vegetables">新鲜蔬菜</a></li>
+					<li><a href="/goods/list/6/" class="ice">速冻食品</a></li>
+				</ul>
+			</div>
+
+			<ul class="navlist fl">
+				<li><a href="/goods/index/">首页</a></li>
+				<li class="interval">|</li>
+				<li><a href="" onclick="app()">手机生鲜</a></li>
+				<li class="interval">|</li>
+				<li><a href="" onclick="app()">抽奖</a></li>
+			</ul>
+		</div>
+  	</div>
+   {% block main_content %} {% endblock main_content %}
+
+ {% endblock body %}
+
