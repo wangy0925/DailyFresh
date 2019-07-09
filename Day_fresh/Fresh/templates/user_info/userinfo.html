@@ -4,9 +4,9 @@
 				<div class="info_con clearfix">
 				<h3 class="common_title2">基本信息</h3>
 						<ul class="user_info_list">
-							<li><span>用户名：</span>15666809216</li>
-							<li><span>联系方式：</span>18210569700</li>
-							<li><span>联系地址：</span>北京市昌平区</li>
+							<li><span>用户名：</span>{{ info.name }}</li>
+							<li><span>联系方式：</span>{{ info.mobile }}</li>
+							<li><span>联系地址：</span>{{ info.add }}</li>
 						</ul>
 				</div>
 
@@ -14,6 +14,18 @@
 			<hr >
 		<div class="has_view_list">
 			<ul class="goods_type_list clearfix">
+        {% for x in goods_list %}
+
+        <li>
+          <a href="detail.html"><img src="{{x.image.url}}"></img</a>
+          <h4><a href="detail.html"> {{ x.name }}</a> </h4>
+          <div class="operate">
+            <span class="price">{{ x.price }}</span>
+            <span class="unite">{{ x.unite }}</span>
+            <a href="#" class="add_goods" title="加入购物车"></a>
+          </div>
+        </li>
+        {% endfor %}
 
 
 			</ul>

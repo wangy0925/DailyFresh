@@ -17,6 +17,7 @@ celery = "*"
 django-celery-results = "*"
 django-redis-sessions = "*"
 django-redis = "*"
+djangoueditor = "*"
 
 [requires]
 python_version = "3.6"

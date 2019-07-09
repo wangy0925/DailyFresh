@@ -6,33 +6,42 @@
   {% block header_con %}
       	<div class="header_con">
 		<div class="header">
-			<div class="welcome fl"><a href="/goods/index/">欢迎来到天天生鲜!</a></div>
+			<div class="welcome fl"><a href="/goods/index/">
+            欢迎来到天天生鲜
+      </a></div>
+
 			<div class="fr">
-      {% if  status == '1' %}
-       <div class="login_info fl" >
-					欢迎您：<em>{{ username }}</em>
+
+          {% if user.is_authenticated %}
+
+{#       <div class="login_info fl" >#}
+					欢迎您：<em>{{ user.username }}</em>
 					<span>|</span>
-					<a href="/user/logout/">退出</a>
-				</div>
-        {% else %}
-        	<div class="login_btn fl" >
+					<a href="/user/loginout/">退出</a>
+{#				</div>#}
+            {% else %}
+
+{#        	<div class="login_btn fl" >#}
 					<a href="/user/login/">登录</a>
 					<span>|</span>
 					<a href="/user/register/">注册</a>
-				</div>
+{#				</div>#}
 
+{#				<div class="user_link fl">#}
 
-      {% endif %}
+{#				</div>#}
 
-				<div class="user_link fl">
-					<span>|</span>
-					<a href="/user/user_info/">用户中心</a>
+        {% endif %}
+      		<span>|</span>
+					<a href="/user/info/">用户中心</a>
 					<span>|</span>
 					<a href="/cart/cart/" >我的购物车</a>
 					<span>|</span>
-					<a href="/order/user_order/">我的订单</a>
-				</div>
+					<a href="/user/orders/">我的订单</a>
+
 			</div>
+
+
 		</div>
 	</div>
     {% endblock %}

@@ -9,4 +9,5 @@ urlpatterns = [
     path('info/', user_info),  # 个人中心
     path('orders/', user_orders),  # 个人中心-全部订单
     path('receive/address/', user_address),  # 个人中心-收货地址
+    path('loginout/', user_loginout),  # 退出登录
 ]

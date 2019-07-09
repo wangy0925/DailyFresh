@@ -5,10 +5,11 @@ from itsdangerous import TimedJSONWebSignatureSerializer as dangerous_serializer
 from itsdangerous import SignatureExpired
 from django.http import HttpResponse
 from django.conf import settings
-from django.contrib.auth import authenticate, login as loginIn
+from django.contrib.auth import authenticate, logout, login as loginIn
 from django.contrib.auth.decorators import login_required
 from .task import send_register_active_email
-
+from django_redis import get_redis_connection
+from goods.models import GoodsSKU
 
 
 # Create your views here.
@@ -131,7 +132,34 @@ def user_info(request):
     :param request:
     :return: 个人中心
     """
-    return render(request, 'user_info/userinfo.html', {'page': 'user'})
+    # 个人信息
+    user = request.user
+    try:
+        address_obj = Address.objects.get(user=user, is_default=True)
+    except Address.DoesNotExist:
+        info = {}
+    else:
+        info = {
+            'name': user.username,
+            'mobile': address_obj.phone,
+            'add': address_obj.addr
+        
+        }
+    # 历史浏览记录
+    con = get_redis_connection('default')
+    # 取出用户的浏览记录
+    history_key = 'history_%d' % user.id
+    # 获取用户最新浏览的五条商品id
+    sku_id = con.lrange(history_key, 0, 4)
+    # 从数据库中查询 用户浏览的商品的信息
+    sku_query = GoodsSKU.objects.filter(id__in=sku_id)
+    # 为了保证按照浏览顺序保存
+    goods_list = []
+    for id in sku_id:
+        goods = GoodsSKU.objects.get(id=id)
+        goods_list.append(goods)
+    context = dict(info=info, page='user', goods_list=goods_list)
+    return render(request, 'user_info/userinfo.html', context=context)
 
 
 @login_required
@@ -151,7 +179,44 @@ def user_address(request):
     :param request:
     :return: 收货地址
     """
-    print('收货地址')
-    return render(request, 'user_info/receive_addres.html', {'page': 'address'})
+    if request.method == 'GET':
+        default_address = Address.objects.filter(user=request.user)
+        if len(default_address) == 0:
+            # 若不存在, 则添加收货地址为默认地址
+            address_list = []
+        else:
+            address_list = [{'addr': x.addr, 'is_default': x.is_default} for x in default_address]
+        return render(request, 'user_info/receive_addres.html', {'page': 'address', 'address_list': address_list})
+    else:
+        # 接收数据
+        receiver = request.POST.get('username')
+        address = request.POST.get('address')
+        postcode = request.POST.get('postcode')
+        mobile = request.POST.get('mobile')
+        # 校验数据
+        if not all([receiver, address, mobile]):
+            return render(request, 'user_info/receive_addres.html', {'error': '数据不完整'})
+        # 业务处理
+        try:
+            address_obj = Address.objects.get(user=request.user, is_default=True)
+        except Address.DoesNotExist:
+            # 若不存在, 则添加收货地址为默认地址
+            is_default = True
+        else:
+            is_default = False
+        Address.objects.create(user=request.user, receiver=receiver,
+                               addr=address, zip_code=postcode, phone=mobile, is_default=is_default)
+        return redirect('/user/receive/address/')
+    
+    
+@login_required
+def user_loginout(request):
+    """
+    :param request:
+    :return: 退出登录
+    """
+    logout(request)
+    return redirect('/goods/index/')
+    
     
  
